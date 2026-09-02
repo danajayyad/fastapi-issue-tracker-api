@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Path
 from starlette import status
 from app.models.project import Projects
-from app.schemas.project import CreateProjectRequest, UpdateProjectRequest
+from app.schemas.project import CreateProjectRequest, ProjectResponse, UpdateProjectRequest
 from app.dependencies.auth import user_dependency
 from app.database.database import db_dependency
 
@@ -23,7 +23,7 @@ async def create_project(current_user : user_dependency, db: db_dependency, proj
     return new_project
 
 
-@router.get("/{project_id}")
+@router.get("/{project_id}", response_model=ProjectResponse)
 async def get_project_by_id(db: db_dependency, current_user: user_dependency,project_id : int = Path(gt=0)):
     project = db.query(Projects).filter(Projects.owner_id == current_user.id, Projects.id == project_id).first()
     if not project:
